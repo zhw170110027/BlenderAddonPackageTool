@@ -22,9 +22,12 @@
 #    SOFTWARE.
 
 bl_info = {
+    # 插件名称
     "name": "Earth Studio",
+    # 插件作者
     "author": "Rob Jolly - Imagiscope",
     "description": "Earth Studio Tools Addon",
+    # blender最低版本
     "blender": (2, 80, 0),
     "version": (1, 2, 2),
     "location": "View3D",
@@ -41,16 +44,22 @@ from xml.etree import cElementTree as ElementTree
 
 import numpy
  
-                
+
+#ges 转 path
 class GES_OT_Path(bpy.types.PropertyGroup):
+    # 读取JSON文件
     p_data: bpy.props.StringProperty(name="0000",subtype='FILE_PATH',default=r"")
+    # 读取图片或视频 文件
     p_movie: bpy.props.StringProperty(name="data",subtype='FILE_PATH',default=r"")
+    # 读取kml文件
     p_kml: bpy.props.StringProperty(name="kml",subtype='FILE_PATH',default=r"")
+    # 读取参考文件
     p_refdata: bpy.props.StringProperty(name="refdata",subtype='FILE_PATH',default=r"")
     
     p_objexpfolder: bpy.props.StringProperty(name="expdata",subtype='DIR_PATH',default=r"//")
+
     p_objexp: bpy.props.StringProperty(name="expdata",subtype='FILE_NAME',default=r"ObjectKML")
-    
+    # 定义枚举
     v_curve: bpy.props.EnumProperty(name="Curve",items=[('NURBS',"Nurbs",""),('POLY',"Poly","")])
     
     def trackitems(self,context):
@@ -104,6 +113,7 @@ class GES_OT_Path(bpy.types.PropertyGroup):
                 t_trks.append(( obj.name, obj.name,""))
             
         return t_trks
+    # 定义模板
     v_mtemplate: bpy.props.EnumProperty(
         name = "Template",
         description = "Marker Template",
@@ -111,7 +121,7 @@ class GES_OT_Path(bpy.types.PropertyGroup):
     )
     v_mlookat: bpy.props.BoolProperty(name="Face to Camera",description="Align the Marker to the Camera.", default = True) 
 
-#     Earth导入面板
+#     Earth Studio 导入面板
 # Earth Studio import panel
 class GES_PT_ImportPanel(bpy.types.Panel):
     bl_label = "Earth Studio Import"
@@ -230,18 +240,24 @@ class GES_PT_KMLPanel(bpy.types.Panel):
             context.area.tag_redraw()
             # 图层
             layout = self.layout
+            # 新建一行
             row = layout.row()
             row.label(text="KML File (route):")
             row = layout.row()
             row.prop(bpy.context.scene.GES_OT_Path, "p_kml", text="", icon="WORLD")
+            # 吸附至
             row = layout.row()
             row.prop(bpy.context.scene.GES_OT_Path, "v_snapto")
+            # 曲线
             row = layout.row()
             row.prop(bpy.context.scene.GES_OT_Path, "v_curve")
+            # 倒角深度
             row = layout.row()
             row.prop(bpy.context.scene.GES_OT_Path, "v_bevel")
+            # 添加海拔
             row = layout.row()
             row.prop(bpy.context.scene.GES_OT_Path, "v_elevation")
+            # 添加terrain
             row = layout.row()
             row.prop(bpy.context.scene.GES_OT_Path, "v_terrain")
             if str(bpy.context.scene.GES_OT_Path.v_terrain) == "True":
@@ -638,6 +654,7 @@ def importkml():
 
     # load kml file for evaluation
     xfilename = bpy.path.abspath(bpy.context.scene.GES_OT_Path.p_kml)
+    # 解析kml文件
     domData = parse(xfilename)
     coor = domData.getElementsByTagName("coordinates")
     
@@ -895,7 +912,7 @@ def makemarkers():
              
                 mkrcnt += 1
     ShowMessageBox( str(mkrcnt) + " Markers Created") 
-
+# 对象转kml
 def objecttokml():
 
     wobj = bpy.data.objects['_GES_WORLD']
@@ -1104,7 +1121,8 @@ def prettyPrint(element, level=0):
 
     return element
 
-    
+
+#     注册插件
 def register():
     bpy.utils.register_class(GES_PT_ImportPanel)
     bpy.utils.register_class(GES_PT_KMLPanel)
@@ -1119,7 +1137,8 @@ def register():
     bpy.utils.register_class(isvoid)
     
     bpy.types.Scene.GES_OT_Path = bpy.props.PointerProperty(type=GES_OT_Path)
-    
+
+#     禁用插件
 def unregister():
     bpy.utils.unregister_class(GES_PT_ImportPanel)
     bpy.utils.unregister_class(GES_PT_KMLPanel)

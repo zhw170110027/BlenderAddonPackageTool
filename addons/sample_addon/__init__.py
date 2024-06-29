@@ -52,6 +52,7 @@ def register():
     print("{} addon is installed.".format(bl_info["name"]))
 
 
+# 禁用插件
 def unregister():
     # Internationalization
     bpy.app.translations.unregister(__addon_name__)
