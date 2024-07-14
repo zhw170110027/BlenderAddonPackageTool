@@ -30,6 +30,7 @@ bl_info = {
     # blender最低版本
     "blender": (2, 80, 0),
     "version": (1, 2, 2),
+    # 插件安装位置 3D视图
     "location": "View3D",
     "warning": "",
     "category": "Import-Export"
@@ -63,6 +64,7 @@ class GES_OT_Path(bpy.types.PropertyGroup):
     v_curve: bpy.props.EnumProperty(name="Curve",items=[('NURBS',"Nurbs",""),('POLY',"Poly","")])
     
     def trackitems(self,context):
+
         t_trks = []
         objects = bpy.data.objects["_GES_WORLD"].children
         for obj in objects:
@@ -72,6 +74,8 @@ class GES_OT_Path(bpy.types.PropertyGroup):
                     t_trks.append(( obj.name, obj.name,""))
         
         return t_trks
+
+    # v_snapto变量
     v_snapto: bpy.props.EnumProperty(
         name = "Snap to",
         description = "Snap to TrackPoint in _GES_WORLD",
@@ -121,10 +125,11 @@ class GES_OT_Path(bpy.types.PropertyGroup):
     )
     v_mlookat: bpy.props.BoolProperty(name="Face to Camera",description="Align the Marker to the Camera.", default = True) 
 
-#     Earth Studio 导入面板
+#     Earth Studio 导入面板 继承这个类 ，有draw方法
 # Earth Studio import panel
 class GES_PT_ImportPanel(bpy.types.Panel):
     bl_label = "Earth Studio Import"
+    # 规范 _PT_ 带上
     bl_idname = "GES_PT_ImportPanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -133,6 +138,7 @@ class GES_PT_ImportPanel(bpy.types.Panel):
     def draw(self,context):
         layout = self.layout
         row = layout.row()
+        # 标签
         row.label(text="Footage (mp4 or first jpeg):")
         row = layout.row()
         row.prop(bpy.context.scene.GES_OT_Path, "p_movie", text="",icon="IMAGE_DATA")
@@ -144,8 +150,10 @@ class GES_PT_ImportPanel(bpy.types.Panel):
         fa = bpy.context.scene.GES_OT_Path.p_movie
         fb  = bpy.context.scene.GES_OT_Path.p_data
         if fa != '' and fb != '': # ensure both selections have 'text' (simple validation)
+            # 添加操作
             row.operator("scene.pre_ges", text="Import Earth Studio" )
         if fa == '' or fb == '':
+            # 添加操作
             row.operator("scene.is_void", text="Select Files" , icon="LOCKED")
 
 
